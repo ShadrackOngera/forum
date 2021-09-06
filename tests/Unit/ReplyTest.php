@@ -10,6 +10,9 @@ class ReplyTest extends TestCase
 {
     use DatabaseMigrations;
 
+    protected $guarded = [];
+
+
     /*** @test **/
     function it_has_an_owner(){
         $reply = factory('App\Reply')->create();
