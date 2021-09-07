@@ -51,4 +51,14 @@ class participateInThreadsTest extends TestCase
 
         $this->get($thread->path())->assertSee($reply->body);
     }
+    function a_reply_requires_a_body(){
+        $this->withExceptionHandling()->signIn();
+
+        $thread = factory('App\Thread');
+        $reply = factory('App\Reply', ['body' => null]);
+        $this->post($thread->path().'/replies', $reply->toArray())
+            ->assertSessionHasErrors('body');
+
+    }
+
 }
