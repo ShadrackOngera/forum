@@ -14,18 +14,16 @@
             </div>
         </div>
 
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                @foreach($thread->replies as $reply)
+        <div class="col-md-8">
+            @foreach($thread->replies as $reply)
 
-                    @include('threads.reply')
+                @include('threads.reply')
 
-                @endforeach
-            </div>
+            @endforeach
         </div>
 
 
-        @if(auth()->check())
+    @if(auth()->check())
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <form method="POST" action="{{ $thread->path() . '/replies'}}">

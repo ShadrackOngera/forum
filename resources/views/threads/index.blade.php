@@ -10,6 +10,7 @@
                     <div class="card-body">
                         @foreach($threads as $thread)
                             <article>
+{{--                                {{$thread = thread::orderBy('id', 'DESC')->get()}}--}}
                                 <a href="{{ $thread->path() }}"> {{$thread->title}} </a>
                                 <div>{{$thread->body}}</div>
                                 <hr>

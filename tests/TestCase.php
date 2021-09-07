@@ -10,8 +10,7 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
 
-    protected function setUp()
-    {
+    public function setUp() :void {
         parent::setUp();
         $this->disableExceptionHandling();
     }

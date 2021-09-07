@@ -2,20 +2,35 @@
 
 namespace Tests\Feature;
 
+use App\Channel;
+use App\Thread;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class participateInForumTest extends TestCase
+class participateInThreadsTest extends TestCase
 {
 
     use DatabaseMigrations;
 
     function unauthenticated_users_may_not_add_replies(){
 
-        $this->expectExeption('Illuminate\Auth\AuthenticationExeption');
-        $this->post('/threads/1/replies', []);
+        $this->withExceptionHandling()
+            ->post('/threads/some-channel/1/replies', [])
+            ->assertRedirect('/login');
+
+
+//        $thread = Thread::factory()->create();
+//        $channel = Channel::factory()->create([
+//            'thread_id' => $thread->id
+//        ]);
+//
+//        $this->withExceptionHandling()
+//            ->post('/threads/'.$channel->id.'/'.$thread->id.'/'.'/replies', [])
+//            ->assertRedirect('/login');
+
+
 
 //        $thread = factory('App\Thread')->create();
 //
