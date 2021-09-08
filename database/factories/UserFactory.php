@@ -55,7 +55,7 @@ $factory->define(App\Reply::class, function ($faker){
 $factory->define(App\Channel::class, function ($faker){
     return [
         'name'=>$faker->name,
-        'slug'=>str::slug($faker->name)
+        'slug'=>Str::slug($faker->name)
     ];
 });
 
