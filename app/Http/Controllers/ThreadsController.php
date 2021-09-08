@@ -3,8 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Channel;
+use App\Filters\ThreadFilters;
 use App\Thread;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
+use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
 class ThreadsController extends Controller
 {
@@ -17,32 +25,56 @@ class ThreadsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
+     * @param Channel $channel
+     * @param ThreadFilters $filters
+     * @return Application|Factory|View
      */
-    public function index(Channel $channel)
+    public function index(Channel $channel, ThreadFilters $filters)
     {
-
-            if ($channel->exists){
-                $threads = $channel->threads()->latest();
-            } else {
-                $threads = Thread::all();
-            }
-
-            if ($username = \request('by')){
-                $user = \App\User::where('name', $username)->firstOrFail();
-
-                $threads->where('user_id', $user->id);
-            }
-
-            $threads = $threads->get();
+//        if ($channel->exists) {
+//            $threads = $channel->threads()->latest();
+//        } else {
+//            $threads = Thread::query()->latest();
+//        }
+        $threads = $this->getThreads($filters, $channel);
 
         return view('threads.index', compact('threads'));
+
+//        if ($username = request('by')) {
+//            $user = User::where('name', $username)->firstOrFail();
+//
+//            $threads->where('user_id', $user->id);
+//        }
+//
+//        return $threads->get();
+
+//        $threads = Thread::filter($filters)->get();
+//        dd($filters);
+//        dd(Thread::filter($filters));
+
+    }
+
+    /**
+     * @param ThreadFilters $filters
+     * @param Channel $channel
+     * @return mixed
+     */
+    protected function getThreads(ThreadFilters $filters, Channel $channel)
+    {
+        $threads = Thread::latest()->filter($filters);
+
+        if ($channel->exists) {
+            $threads->where('channel_id', $channel->id);
+        }
+
+        $threads = $threads->get();
+        return $threads;
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
+     * @return Application|Factory|Response|View
      */
     public function create()
     {
@@ -52,8 +84,9 @@ class ThreadsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Illuminate\Routing\Redirector
+     * @param Request $request
+     * @return Application|Redirector|RedirectResponse
+     * @throws ValidationException
      */
     public function store(Request $request)
     {
@@ -62,33 +95,38 @@ class ThreadsController extends Controller
             'body' => 'required',
             'channel_id' => 'required|exists:channels,id'
         ]);
-        $thread = Thread::make([
+
+        /** @var Thread $thread */
+        $thread = Thread::query()->create([
             'user_id' => auth()->id(),
             'channel_id' => request('channel_id'),
             'title' => request('title'),
             'body' => request('body')
 
         ]);
-         return redirect($thread->path());
 
+        return redirect($thread->path());
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Thread  $thread
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
+     * @param Thread $thread
+     * @return Application|Factory|View
      */
     public function show($channelId, Thread $thread)
     {
-        return view('threads.show', compact('thread'));
+        return view('threads.show', [
+            'thread' => $thread,
+            'replies' => $thread->replies()->paginate(15)
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Thread  $thread
-     * @return \Illuminate\Http\Response
+     * @param Thread $thread
+     * @return Response
      */
     public function edit(Thread $thread)
     {
@@ -98,9 +136,9 @@ class ThreadsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Thread  $thread
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Thread $thread
+     * @return Response
      */
     public function update(Request $request, Thread $thread)
     {
@@ -110,8 +148,8 @@ class ThreadsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Thread  $thread
-     * @return \Illuminate\Http\Response
+     * @param Thread $thread
+     * @return Response
      */
     public function destroy(Thread $thread)
     {
