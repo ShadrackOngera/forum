@@ -23,13 +23,19 @@ class ThreadsController extends Controller
     {
 
             if ($channel->exists){
-                $threads = $channel->threads()->latest()->get();
-//                $channelId = Channel::where('slug', $channelSlug)->latest()->get();
+                $threads = $channel->threads()->latest();
             } else {
                 $threads = Thread::all();
             }
-//
-        $threads = Thread::latest()->get();
+
+            if ($username = \request('by')){
+                $user = \App\User::where('name', $username)->firstOrFail();
+
+                $threads->where('user_id', $user->id);
+            }
+
+            $threads = $threads->get();
+
         return view('threads.index', compact('threads'));
     }
 
