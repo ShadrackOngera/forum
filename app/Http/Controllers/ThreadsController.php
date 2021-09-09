@@ -31,14 +31,20 @@ class ThreadsController extends Controller
      */
     public function index(Channel $channel, ThreadFilters $filters)
     {
+        $threads = $this->getThreads($filters, $channel);
+
+        if (request()->wantsJson()) {
+            return $threads;
+        }
+
+        return view('threads.index', compact('threads'));
+        
 //        if ($channel->exists) {
 //            $threads = $channel->threads()->latest();
 //        } else {
 //            $threads = Thread::query()->latest();
 //        }
-        $threads = $this->getThreads($filters, $channel);
 
-        return view('threads.index', compact('threads'));
 
 //        if ($username = request('by')) {
 //            $user = User::where('name', $username)->firstOrFail();
