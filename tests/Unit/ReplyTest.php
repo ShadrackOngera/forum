@@ -4,17 +4,16 @@ namespace Tests\Unit;
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
 
 class ReplyTest extends TestCase
 {
     use DatabaseMigrations;
 
-    protected $guarded = [];
+//    protected $guarded = [];
 
-
-    /*** @test **/
-    function it_has_an_owner(){
+    /** @test */
+    function it_has_an_owner()
+    {
         $reply = factory('App\Reply')->create();
 
         $this->assertInstanceOf('App\User', $reply->owner);
