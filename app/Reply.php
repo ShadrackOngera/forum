@@ -28,4 +28,5 @@ class Reply extends Model
     {
         return $this->morphMany(Favorite::class, 'favorated');
     }
+
 }

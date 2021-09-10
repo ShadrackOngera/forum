@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        
     }
 
     /**
@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
 //        \View::share('channels', Channel::all());  // was loading before database migrations, Thus bringing an error
-        \View::composer('*', function ($view){
+        View::composer('*', function ($view) {
             $view->with('channels', Channel::all());
         });
     }

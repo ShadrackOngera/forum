@@ -38,7 +38,7 @@ class ThreadsController extends Controller
         }
 
         return view('threads.index', compact('threads'));
-        
+
 //        if ($channel->exists) {
 //            $threads = $channel->threads()->latest();
 //        } else {
@@ -67,7 +67,7 @@ class ThreadsController extends Controller
      */
     protected function getThreads(ThreadFilters $filters, Channel $channel)
     {
-        $threads = Thread::latest()->filter($filters);
+        $threads = Thread::with('channel')->latest()->filter($filters);
 
         if ($channel->exists) {
             $threads->where('channel_id', $channel->id);

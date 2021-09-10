@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Reply;
-use Illuminate\Http\Response;
+use Illuminate\Http\RedirectResponse;
 
 class FavoritesController extends Controller
 {
@@ -12,18 +12,13 @@ class FavoritesController extends Controller
         $this->middleware('auth');
     }
 
-    public function store(Reply $reply): Response
+    public function store(Reply $reply): RedirectResponse
     {
         $reply->favorites();
 
-//        Favorite::create([
-//            'user_id' => auth()->id(),
-//            'favorited_id' => $reply->id,
-//            'favorited_type' => get_class($reply)
-//        ]);
-
+        return back();
+//        return new Response($reply->refresh());
 //        return \Illuminate\Support\Facades\Response::json()
-        return new Response($reply->refresh());
 //        return response()->json()
     }
 }
